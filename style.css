@@ -78,6 +78,11 @@ body.dark-mode #toggleDarkMode {
     color: #fff;
 }
 /*---KRAJ DARK MODA---*/
+.loginBckg {
+    backdrop-filter: blur(10px);
+    width: 40%;
+}
+
 
 .inputForm {
     justify-content: center;
