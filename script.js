@@ -31,6 +31,7 @@ const darkModeColors = [
 
 var selectedIndex;
 
+//color switching logic
 function switchDarkMode() {
     isDarkMode = !isDarkMode;
 
@@ -97,4 +98,60 @@ function setRandomNoteCardColor() {
         }
 
     });
+}
+
+//add note btn stuff
+function openNoteCreationModal() {
+    document.querySelector(".noteCreationModal").classList.remove("d-none");
+}
+
+function saveNote() {
+    let noteTitle = document.getElementById("noteTitle").value;
+    let noteContent = document.getElementById("noteContent").value;
+    let dateCreated = new Date().toLocaleDateString();
+    let timeCreated = new Date().toLocaleTimeString();
+
+
+    document.querySelector(".noteCreationModal").classList.add("d-none");
+
+    document.querySelector(".notesCountStatus").classList.add("d-none");
+
+    document.querySelector(".notesGrid").innerHTML += `
+        <div class="noteCard p-3 rounded-4 shadow-sm collapsed" 
+            style="background-color: ${isDarkMode ? darkModeColors[selectedIndex] : lightModeColors[selectedIndex]};">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="m-0 noteHeader">${noteTitle}</h5>
+            <small class="text-muted">${dateCreated} ${timeCreated}</small>
+            </div>
+
+            <p class="noteContent">${noteContent}</p>
+
+            <div class="d-flex justify-content-end mt-3">
+            <button class="expandBtn btn btn-sm border-0 bg-transparent text-secondary">...</button>
+            </div>
+        </div>
+        <br>
+`;
+
+    setTimeout(() => {
+        document.querySelectorAll('.expandBtn').forEach(btn => {
+            btn.onclick = () => {
+                const noteCard = btn.closest('.noteCard');
+                noteCard.classList.toggle('expanded');
+                noteCard.classList.toggle('collapsed');
+                btn.textContent = noteCard.classList.contains('expanded') ? 'ˇ' : '...';
+            };
+        });
+    }, 100);
+}
+
+
+function countLetters() {
+    let content = document.getElementById("noteContent").value;
+    let letterCount = content.length;
+    document.querySelector(".currentLetterCount").textContent = letterCount;
+    if (letterCount >= 1000) {
+        document.getElementById("noteContent").value = content.substring(0, 1000);
+        document.querySelector(".currentLetterCount").textContent = 1000;
+    }
 }

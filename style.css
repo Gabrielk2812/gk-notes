@@ -77,6 +77,52 @@ body.dark-mode #toggleDarkMode {
     border-color: #fff;
     color: #fff;
 }
+
+
+body.dark-mode .profileEditingModal,
+body.dark-mode .modal-content {
+    background-color: rgba(30, 30, 30, 0.95) !important;
+    color: #fff !important;
+    border: 1px solid #444;
+}
+
+
+body.dark-mode .profileEditingModal h2,
+body.dark-mode .modal-header,
+body.dark-mode .modal-title {
+    color: #fff;
+}
+
+
+body.dark-mode .profileEditingModal input,
+body.dark-mode .modal input,
+body.dark-mode .profileEditingModal textarea,
+body.dark-mode .modal textarea {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid #aaa;
+}
+
+body.dark-mode .profileEditingModal ::placeholder,
+body.dark-mode .modal ::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+
+body.dark-mode .profileEditingModal .btn,
+body.dark-mode .modal .btn {
+    background-color: #4B1E8F;
+    color: #fff;
+    border: none;
+}
+
+body.dark-mode .profileEditingModal .btn-secondary,
+body.dark-mode .modal .btn-secondary {
+    background-color: #555;
+    color: #fff;
+    border: none;
+}
+
 /*---KRAJ DARK MODA---*/
 .loginBckg {
     backdrop-filter: blur(10px);
@@ -179,6 +225,48 @@ body.dark-mode #toggleDarkMode {
 #toggleDarkMode:hover, 
 #profilePicture:hover, #LogOutButton:hover {
     background-color: rgba(255, 255, 255, 0.2);
+}
+
+.addNoteBtn {
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.noteContent {
+  overflow: hidden;
+  transition: max-height 0.4s ease, filter 0.25s ease;
+  max-height: 100px; /* collapsed height */
+  filter: blur(0.3px);
+  -webkit-mask-image: linear-gradient(180deg, black 70%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0));
+  mask-image: linear-gradient(180deg, black 70%, rgba(0,0,0,0.5) 85%, rgba(0,0,0,0));
+}
+
+.noteCard.collapsed .noteContent {
+  height: 30px;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.noteCard.expanded .noteContent {
+  height: auto;
+  overflow: visible;
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.expandBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1.4em;
+  color: #000;
+  transition: transform 0.3s ease;
+}
+
+.noteCard.expanded .expandBtn {
+  transform: rotate(180deg);
 }
 
 

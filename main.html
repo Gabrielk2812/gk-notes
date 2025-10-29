@@ -17,7 +17,7 @@
         <div class="d-flex align-items-center gap-3">
             <a href="./main.html"><img src="./assets/icon_whitecircle.png" alt="GK NOTES Logo" width="75" height="75"
                     class="rounded-circle" id="siteIcon"></a>
-            <button class="btn btn-outline-light rounded-pill px-3" title="Add new note">+ Add</button>
+            <button class="btn btn-outline-light rounded-pill px-3 addNoteBtn" title="Add new note">+ Add</button>
         </div>
 
 
@@ -41,6 +41,8 @@
     <div class="container mt-5 pt-5">
         <h1 class="text-center my-4" id="userInfoDisplay">👋Hello <span id="usernameTitle"></span>, here are your
             notes...</h1>
+
+        <!--PROFILE EDITING MODAL-->
         <div
             class="profileEditingModal container d-none position-fixed top-50 start-50 translate-middle bg-white p-4 rounded-4 shadow">
             <h2>Edit Profile</h2>
@@ -57,116 +59,127 @@
                 onclick="document.querySelector('.profileEditingModal').classList.add('d-none')">Cancel</button>
 
         </div>
+
+        <!--NOTE CREATION MODAL-->
+        <div
+            class="noteCreationModal container d-none position-fixed top-50 start-50 translate-middle bg-white p-4 rounded-4 shadow">
+            <h2>Create Note</h2>
+            <div class="mb-3">
+                <label for="noteTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="noteTitle" placeholder="Enter note title">
+            </div>
+            <div class="mb-3">
+                <label for="noteContent" class="form-label">Content</label>
+                <textarea class="form-control" id="noteContent" rows="5" placeholder="Enter note content"
+                    style="resize: none;" onkeypress="countLetters()"></textarea>
+                <p class="maxLetterCount "><span class="currentLetterCount">0</span>/1000</p>
+            </div>
+            <button class="btn btn-primary" onclick="saveNote()">Save Note</button>
+            <button type="button" class="btn btn-secondary"
+                onclick="document.querySelector('.noteCreationModal').classList.add('d-none')">Cancel</button>
+
+        </div>
+
+        <!--NOTES GRID-->
         <div class="notesGrid mt-4">
-            <div class="noteCard p-3 mb-4 rounded-4 shadow-sm">
-                <h3 class="noteTitle">Sample Note 1</h3>
-                <p class="noteContent">This is a sample note content. You can edit or delete this note.</p>
-    
-            </div>
-            <div class="noteCard p-3 mb-4 rounded-4 shadow-sm">
-                <h3 class="noteTitle">Sample Note 1</h3>
-                <p class="noteContent">This is a sample note content. You can edit or delete this note.</p>
-    
-            </div>
-            <div class="noteCard p-3 mb-4 rounded-4 shadow-sm">
-                <h3 class="noteTitle">Sample Note 1</h3>
-                <p class="noteContent">This is a sample note content. You can edit or delete this note.</p>
-    
-            </div>
+            <p class="text-center notesCountStatus"><i>You have no notes yet. Click "+ Add" to create your first
+                    note!</i></p>
         </div>
 
 
 
-    <!--SKRIPTE ZA OVAJ PAGE-->
-    <script>
-        let isDarkMode = false;
+        <!--SKRIPTE ZA OVAJ PAGE-->
+        <script>
+            let isDarkMode = false;
 
-        window.addEventListener("DOMContentLoaded", () => {
-            const savedMode = localStorage.getItem("darkmode");
-            if (savedMode === "true") {
-                isDarkMode = true;
-                document.body.classList.add("dark-mode");
-                document.getElementById("toggleDarkMode").textContent = "☀️";
-                document.getElementById("siteIcon").src = "./assets/icon_purplecircle.png";
-            } else {
-                isDarkMode = false;
-                document.body.classList.remove("dark-mode");
-                document.getElementById("toggleDarkMode").textContent = "🌙";
-                document.getElementById("siteIcon").src = "./assets/icon_whitecircle.png";
+            window.addEventListener("DOMContentLoaded", () => {
+                const savedMode = localStorage.getItem("darkmode");
+                if (savedMode === "true") {
+                    isDarkMode = true;
+                    document.body.classList.add("dark-mode");
+                    document.getElementById("toggleDarkMode").textContent = "☀️";
+                    document.getElementById("siteIcon").src = "./assets/icon_purplecircle.png";
+                } else {
+                    isDarkMode = false;
+                    document.body.classList.remove("dark-mode");
+                    document.getElementById("toggleDarkMode").textContent = "🌙";
+                    document.getElementById("siteIcon").src = "./assets/icon_whitecircle.png";
+                }
+            });
+
+            window.addEventListener("DOMContentLoaded", selectColorIndex);
+
+            window.addEventListener("DOMContentLoaded", setRandomProfileColor);
+
+            window.addEventListener("DOMContentLoaded", setRandomNoteCardColor);
+
+            window.addEventListener("DOMContentLoaded", setRandomProfileTextColor);
+
+            document.getElementById("toggleDarkMode").addEventListener("click", switchDarkMode);
+
+            document.querySelector(".addNoteBtn").addEventListener("click", openNoteCreationModal);
+
+            document.getElementById("LogOutButton").addEventListener("click", function () {
+                localStorage.removeItem("username");
+                localStorage.removeItem("password");
+                window.location.href = "./index.html";
+            });
+
+            function getUsernameDisplay(name) {
+
+                const parts = name.split(/[\.\_\-\+\@]/);
+
+                let displayName = parts[0];
+
+                displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
+                return displayName;
             }
-        });
-
-        window.addEventListener("DOMContentLoaded", selectColorIndex);
-
-        window.addEventListener("DOMContentLoaded", setRandomProfileColor);
-
-        window.addEventListener("DOMContentLoaded", setRandomNoteCardColor);
-
-        document.getElementById("toggleDarkMode").addEventListener("click", switchDarkMode);
-
-        window.addEventListener("DOMContentLoaded", setRandomProfileTextColor);
-
-        document.getElementById("LogOutButton").addEventListener("click", function () {
-            localStorage.removeItem("username");
-            localStorage.removeItem("password");
-            window.location.href = "./index.html";
-        });
-
-        function getUsernameDisplay(name) {
-
-            const parts = name.split(/[\.\_\-\+\@]/);
-
-            let displayName = parts[0];
-
-            displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-
-            return displayName;
-        }
-        function ReadUserData() {
-            const username = localStorage.getItem("username") || "Guest";
-            const password = localStorage.getItem("password") || "";
-            let displayUsername = getUsernameDisplay(username);
+            function ReadUserData() {
+                const username = localStorage.getItem("username") || "Guest";
+                const password = localStorage.getItem("password") || "";
+                let displayUsername = getUsernameDisplay(username);
 
 
-            let info = document.getElementById("usernameTitle");
-            info.innerText = displayUsername;
+                let info = document.getElementById("usernameTitle");
+                info.innerText = displayUsername;
 
-            let pfpName = document.getElementById("usernamePfp");
-            pfpName.innerText = username;
+                let pfpName = document.getElementById("usernamePfp");
+                pfpName.innerText = username;
 
-            let pfpShortName = displayUsername.charAt(0).toUpperCase();
-            document.getElementById("profile-pill-span").innerText = pfpShortName;
+                let pfpShortName = displayUsername.charAt(0).toUpperCase();
+                document.getElementById("profile-pill-span").innerText = pfpShortName;
 
-            this.document.title = displayUsername + "'s Notes | GK NOTES";
-        }
-        window.onload = ReadUserData;
+                this.document.title = displayUsername + "'s Notes | GK NOTES";
+            }
+            window.onload = ReadUserData;
 
-        function openProfileEditingModal() {
-            document.querySelector('.profileEditingModal').classList.remove('d-none');
-        }
-
-        function saveProfileChanges() {
-            let newUsername = document.getElementById("editUsername").value.trim();
-            let newPassword = document.getElementById("editPassword").value;
-
-            if (newUsername) {
-                let shortName = newUsername.split("@")[0];
-                newUsername = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-
-                localStorage.setItem("username", newUsername);
+            function openProfileEditingModal() {
+                document.querySelector('.profileEditingModal').classList.remove('d-none');
             }
 
-            if (newPassword) {
-                localStorage.setItem("password", newPassword);
+            function saveProfileChanges() {
+                let newUsername = document.getElementById("editUsername").value.trim();
+                let newPassword = document.getElementById("editPassword").value;
+
+                if (newUsername) {
+                    let shortName = newUsername.split("@")[0];
+                    newUsername = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+
+                    localStorage.setItem("username", newUsername);
+                }
+
+                if (newPassword) {
+                    localStorage.setItem("password", newPassword);
+                }
+
+                ReadUserData();
+
+                document.querySelector('.profileEditingModal').classList.add('d-none');
+
+                alert("Profile updated successfully!");
             }
-
-            ReadUserData();
-
-            document.querySelector('.profileEditingModal').classList.add('d-none');
-
-            alert("Profile updated successfully!");
-        }
-    </script>
+        </script>
 </body>
 
 </html>
