@@ -80,6 +80,7 @@ body.dark-mode #toggleDarkMode {
 
 
 body.dark-mode .profileEditingModal,
+body.dark-mode .noteCreationModal,
 body.dark-mode .modal-content {
     background-color: rgba(30, 30, 30, 0.95) !important;
     color: #fff !important;
@@ -88,6 +89,7 @@ body.dark-mode .modal-content {
 
 
 body.dark-mode .profileEditingModal h2,
+body.dark-mode .noteCreationModal h2,
 body.dark-mode .modal-header,
 body.dark-mode .modal-title {
     color: #fff;
@@ -95,29 +97,29 @@ body.dark-mode .modal-title {
 
 
 body.dark-mode .profileEditingModal input,
-body.dark-mode .modal input,
+body.dark-mode .noteCreationModal input,
 body.dark-mode .profileEditingModal textarea,
-body.dark-mode .modal textarea {
+body.dark-mode .noteCreationModal textarea {
     background-color: rgba(255, 255, 255, 0.1);
     color: #fff;
     border: 1px solid #aaa;
 }
 
 body.dark-mode .profileEditingModal ::placeholder,
-body.dark-mode .modal ::placeholder {
+body.dark-mode .noteCreationModal ::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
 
-body.dark-mode .profileEditingModal .btn,
-body.dark-mode .modal .btn {
+body.dark-mode .profileEditingModal .noteCreationModal .btn,
+body.dark-mode .noteCreationModal .btn {
     background-color: #4B1E8F;
     color: #fff;
     border: none;
 }
 
-body.dark-mode .profileEditingModal .btn-secondary,
-body.dark-mode .modal .btn-secondary {
+body.dark-mode .profileEditingModal .noteCreationModal .btn-secondary,
+body.dark-mode .noteCreationModal .btn-secondary {
     background-color: #555;
     color: #fff;
     border: none;
