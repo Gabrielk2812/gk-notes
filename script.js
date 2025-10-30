@@ -10,11 +10,20 @@ const lightModeColors = [
     "rgba(255,200,220,0.7)",  // soft pink
     "rgba(180,220,255,0.7)",  // sky blue
     "rgba(230,230,255,0.7)",  // pale blue
-    "rgba(255,245,180,0.7)"   // light yellow
+    "rgba(255,245,180,0.7)",  // light yellow
+    "rgba(255,210,240,0.7)",  // cotton candy
+    "rgba(190,245,255,0.7)",  // ice blue
+    "rgba(255,220,190,0.7)",  // apricot
+    "rgba(210,255,210,0.7)",  // soft lime
+    "rgba(240,240,240,0.7)",  // pearl gray
+    "rgba(250,230,255,0.7)",  // orchid pink
+    "rgba(255,230,220,0.7)",  // peach mist
+    "rgba(220,255,250,0.7)"   // seafoam
 ];
 
+
 const darkModeColors = [
-    "rgba(75,30,143,0.7)",    // violet
+    "rgba(120,50,220,0.7)",   // deep amethys
     "rgba(107,63,191,0.7)",   // medium violet
     "rgba(58,123,213,0.7)",   // soft blue
     "rgba(0,183,162,0.7)",    // teal
@@ -25,8 +34,18 @@ const darkModeColors = [
     "rgba(0,200,180,0.7)",    // bright teal
     "rgba(255,180,120,0.7)",  // warm orange
     "rgba(220,150,255,0.7)",  // soft violet
-    "rgba(150,255,200,0.7)"   // light green
+    "rgba(150,255,200,0.7)",  // light green
+    "rgba(255,100,150,0.7)",  // neon pink
+    "rgba(100,180,255,0.7)",  // electric blue
+    "rgba(80,255,180,0.7)",   // aqua glow
+    "rgba(255,255,150,0.7)",  // soft neon yellow
+    "rgba(160,70,255,0.7)",   // cosmic purple
+    "rgba(255,120,90,0.7)",   // fiery coral
+    "rgba(0,150,255,0.7)",    // digital blue
+    "rgba(255,200,80,0.7)"    // amber glow
 ];
+
+
 
 
 var selectedIndex;
@@ -100,9 +119,17 @@ function setRandomNoteCardColor() {
     });
 }
 
+
+function openProfileEditingModal() {
+    document.querySelector('.profileEditingModal').classList.remove('d-none');
+    document.querySelector("#editUsername").value = localStorage.getItem("username");
+    document.querySelector("#editPassword").value = localStorage.getItem("password");;
+}
+
 //add note btn stuff
 function openNoteCreationModal() {
     document.querySelector(".noteCreationModal").classList.remove("d-none");
+    document.querySelector(".currentLetterCount").innerText = "0";
 }
 
 function saveNote() {
@@ -110,29 +137,62 @@ function saveNote() {
     let noteContent = document.getElementById("noteContent").value;
     let dateCreated = new Date().toLocaleDateString();
     let timeCreated = new Date().toLocaleTimeString();
+    let contentNum = document.getElementById("noteContent").value.length;
 
+
+    while (noteContent === "" || noteTitle === "") {
+        alert("Please fill in all fields note fields.");
+        return;
+    }
 
     document.querySelector(".noteCreationModal").classList.add("d-none");
 
     document.querySelector(".notesCountStatus").classList.add("d-none");
 
-    document.querySelector(".notesGrid").innerHTML += `
-        <div class="noteCard p-3 rounded-4 shadow-sm collapsed" 
+    if (contentNum > 180) {
+        document.querySelector(".notesGrid").innerHTML += `
+        <div class="noteCard p-3 rounded-4 shadow-sm collapsed added" 
             style="background-color: ${isDarkMode ? darkModeColors[selectedIndex] : lightModeColors[selectedIndex]};">
             <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="m-0 noteHeader">${noteTitle}</h5>
             <small class="text-muted">${dateCreated} ${timeCreated}</small>
             </div>
 
-            <p class="noteContent">${noteContent}</p>
+            <p class="noteContent" style="overflow: visible">${noteContent}</p>
 
             <div class="d-flex justify-content-end mt-3">
-            <button class="expandBtn btn btn-sm border-0 bg-transparent text-secondary">...</button>
+                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
+                <button class="deleteNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="deleteNote(event)"><i class="bi bi-trash3" style="width:25px; height:25px;"></i></button>
+                <button class="expandBtn btn btn-sm border-0 bg-transparent text-muted">...</button>
             </div>
         </div>
         <br>
 `;
+    }
+    else {
+        document.querySelector(".notesGrid").innerHTML += `
+        <div class="noteCard p-3 rounded-4 shadow-sm added" 
+            style="background-color: ${isDarkMode ? darkModeColors[selectedIndex] : lightModeColors[selectedIndex]}; blur: 0px;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="m-0 noteHeader">${noteTitle}</h5>
+            <small class="text-muted">${dateCreated} ${timeCreated}</small>
+            </div>
 
+            <p class="noteContent" style="blur: none">${noteContent}</p>
+
+            <div class="d-flex justify-content-end mt-3">
+                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
+                <button class="deleteNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="deleteNote(event)"><i class="bi bi-trash3" style="width:25px; height:25px;"></i></button>
+            </div>
+        </div>
+        <br>
+`;
+    }
+
+
+
+    document.getElementById("noteTitle").value = "";
+    document.getElementById("noteContent").value = "";
     setTimeout(() => {
         document.querySelectorAll('.expandBtn').forEach(btn => {
             btn.onclick = () => {
@@ -143,6 +203,12 @@ function saveNote() {
             };
         });
     }, 100);
+
+    setTimeout(() => {
+        document.querySelectorAll('.noteCard.added').forEach(note => {
+            note.classList.remove('added');
+        });
+    }, 400);
 }
 
 
@@ -154,4 +220,22 @@ function countLetters() {
         document.getElementById("noteContent").value = content.substring(0, 1000);
         document.querySelector(".currentLetterCount").textContent = 1000;
     }
+}
+
+function deleteNote(e) {
+    const parentNoteCard = e.target.closest(".noteCard");
+
+    parentNoteCard.classList.add("deleted");
+
+    setTimeout(() => {
+        parentNoteCard.remove();
+
+        const notesLeft = document.querySelectorAll('.noteCard').length;
+
+        if (notesLeft === 0) {
+            console.log("there are no more notes")
+            document.querySelector(".notesCountStatus").classList.remove("d-none");
+        }
+    }, 400)
+
 }
