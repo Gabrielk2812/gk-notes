@@ -48,7 +48,11 @@ const darkModeColors = [
 
 
 
-var selectedIndex;
+var selectedIndex; //to keep track of which color index is selected
+
+var currentlyEditingNoteCard = null; //to keep track of which note is being edited
+
+
 
 //color switching logic
 function switchDarkMode() {
@@ -64,6 +68,7 @@ function switchDarkMode() {
         setRandomNoteCardColor();
         setRandomProfileColor();
         setRandomProfileTextColor();
+        renderColorButtons();
 
     } else {
         document.body.classList.remove("dark-mode");
@@ -73,6 +78,7 @@ function switchDarkMode() {
         setRandomNoteCardColor();
         setRandomProfileColor();
         setRandomProfileTextColor();
+        renderColorButtons();
     }
 }
 
@@ -119,20 +125,104 @@ function setRandomNoteCardColor() {
     });
 }
 
+function renderColorButtons() {
+    const container = document.querySelector(".colorButtonsContainer");
+    container.innerHTML = "";
+    let profileColors = isDarkMode ? darkModeColors : lightModeColors;
 
-function openProfileEditingModal() {
-    document.querySelector('.profileEditingModal').classList.remove('d-none');
-    document.querySelector("#editUsername").value = localStorage.getItem("username");
-    document.querySelector("#editPassword").value = localStorage.getItem("password");;
+    profileColors.forEach((color) => {
+        const btn = document.createElement("button");
+        btn.classList.add("rounded-circle", "me-2");
+        btn.style.height = "50px";
+        btn.style.width = "50px";
+        btn.style.backgroundColor = color;
+        btn.title = color;
+
+        container.appendChild(btn);
+    });
+
+    const btnRandom = document.createElement("button");
+    btnRandom.classList.add("rounded-circle", "me-2");
+    btnRandom.style.height = "50px";
+    btnRandom.style.width = "50px";
+    btnRandom.style.backgroundColor = "black";
+    btnRandom.title = "Random Color";
+    btnRandom.innerHTML = '<i class="bi bi-shuffle" style="color: white; font-size: 24px;"></i>';
+
+    container.appendChild(btnRandom);
 }
 
-//add note btn stuff
+
+
+//modal opening functions
+function openProfileEditingModal() {
+    const modal = document.querySelector('.profileEditingModal');
+    modal.classList.remove('d-none');
+
+    void modal.offsetWidth;
+    modal.classList.add('added');
+
+    document.querySelector("#editUsername").value = localStorage.getItem("username");
+    document.querySelector("#editPassword").value = localStorage.getItem("password");
+}
+
 function openNoteCreationModal() {
-    document.querySelector(".noteCreationModal").classList.remove("d-none");
+    const modal = document.querySelector(".noteCreationModal");
+    modal.classList.remove("d-none");
+
+    void modal.offsetWidth;
+    modal.classList.add("added");
+
     document.querySelector(".currentLetterCount").innerText = "0";
 }
 
+function openNoteEditingModal(e) {
+    const modal = document.querySelector(".noteEditingModal");
+    modal.classList.remove("d-none");
+
+    void modal.offsetWidth;
+    modal.classList.add("added");
+
+    const parentNoteCard = e.target.closest(".noteCard");
+    const noteTitle = parentNoteCard.querySelector(".noteHeader").innerText;
+    const noteContent = parentNoteCard.querySelector(".noteContent").innerText;
+
+    currentlyEditingNoteCard = parentNoteCard;
+
+    document.querySelector("#editNoteTitle").value = noteTitle;
+    document.querySelector("#editNoteContent").value = noteContent;
+    document.querySelector(".editCurrentLetterCount").innerText = noteContent.length;
+}
+
+
+
+
+//note operations
+function editNote() {
+    const modal = document.querySelector(".noteEditingModal");
+
+    const noteCard = currentlyEditingNoteCard
+
+    let noteTitle = document.getElementById("editNoteTitle").value;
+    let noteContent = document.getElementById("editNoteContent").value;
+
+    noteCard.querySelector(".noteHeader").innerHTML = noteTitle;
+    noteCard.querySelector(".noteContent").innerText = noteContent;
+
+    modal.classList.remove('added');
+    modal.classList.add('closed');
+    setTimeout(() => {
+        modal.classList.add("d-none");
+    }, 100);
+
+    
+    modal.classList.remove('closed');
+    currentlyEditingNoteCard = null;
+}
+
 function saveNote() {
+    const modal = document.querySelector(".noteCreationModal");
+
     let noteTitle = document.getElementById("noteTitle").value;
     let noteContent = document.getElementById("noteContent").value;
     let dateCreated = new Date().toLocaleDateString();
@@ -161,7 +251,7 @@ function saveNote() {
             <p class="noteContent" style="overflow: visible">${noteContent}</p>
 
             <div class="d-flex justify-content-end mt-3">
-                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
+                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="openNoteEditingModal(event)"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
                 <button class="deleteNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="deleteNote(event)"><i class="bi bi-trash3" style="width:25px; height:25px;"></i></button>
                 <button class="expandBtn btn btn-sm border-0 bg-transparent text-muted">...</button>
             </div>
@@ -181,7 +271,7 @@ function saveNote() {
             <p class="noteContent" style="blur: none">${noteContent}</p>
 
             <div class="d-flex justify-content-end mt-3">
-                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
+                <button class="editNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="openNoteEditingModal(event)"><i class="bi bi-pencil-square" style="width:25px; height:25px;"></i></button>
                 <button class="deleteNoteBtn btn btn-sm border-0 bg-transparent text-muted" onclick="deleteNote(event)"><i class="bi bi-trash3" style="width:25px; height:25px;"></i></button>
             </div>
         </div>
@@ -209,16 +299,35 @@ function saveNote() {
             note.classList.remove('added');
         });
     }, 400);
-}
 
+    modal.classList.remove('added');
+    modal.classList.add('closed');
+    setTimeout(() => {
+        modal.classList.add("d-none");
+    }, 100);
+
+    modal.classList.remove('closed');
+}
 
 function countLetters() {
     let content = document.getElementById("noteContent").value;
     let letterCount = content.length;
     document.querySelector(".currentLetterCount").textContent = letterCount;
+
     if (letterCount >= 1000) {
         document.getElementById("noteContent").value = content.substring(0, 1000);
         document.querySelector(".currentLetterCount").textContent = 1000;
+    }
+}
+
+function countEditLetters() {
+    let content = document.getElementById("editNoteContent").value;
+    let letterCount = content.length;
+    document.querySelector(".editCurrentLetterCount").textContent = letterCount;
+
+    if (letterCount >= 1000) {
+        document.getElementById("editNoteContent").value = content.substring(0, 1000);
+        document.querySelector(".editCurrentLetterCount").textContent = 1000;
     }
 }
 
@@ -238,4 +347,66 @@ function deleteNote(e) {
         }
     }, 400)
 
+}
+
+
+
+//user profile functions
+function getUsernameDisplay(name) {
+
+    const parts = name.split(/[\.\_\-\+\@]/);
+
+    let displayName = parts[0];
+
+    displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+
+    return displayName;
+}
+
+function ReadUserData() {
+    const username = localStorage.getItem("username") || "Guest";
+    const password = localStorage.getItem("password") || "";
+    let displayUsername = getUsernameDisplay(username);
+
+
+    let info = document.getElementById("usernameTitle");
+    info.innerText = displayUsername;
+
+    let pfpName = document.getElementById("usernamePfp");
+    pfpName.innerText = username;
+
+    let pfpShortName = displayUsername.charAt(0).toUpperCase();
+    document.getElementById("profile-pill-span").innerText = pfpShortName;
+
+    this.document.title = displayUsername + "'s Notes | GK NOTES";
+}
+
+function saveProfileChanges() {
+    let modal = document.querySelector('.profileEditingModal');
+    let newUsername = document.getElementById("editUsername").value.trim();
+    let newPassword = document.getElementById("editPassword").value;
+
+
+    if (newUsername) {
+        let shortName = newUsername.split("@")[0];
+        newUsername = shortName.charAt(0).toUpperCase() + shortName.slice(1);
+
+        localStorage.setItem("username", newUsername);
+    }
+
+    if (newPassword) {
+        localStorage.setItem("password", newPassword);
+    }
+
+    ReadUserData();
+
+    modal.classList.remove('added');
+    modal.classList.add('closed');
+    setTimeout(() => {
+        modal.classList.add("d-none");
+    }, 100);
+
+    modal.classList.remove('closed');
+
+    alert("Profile updated successfully!");
 }

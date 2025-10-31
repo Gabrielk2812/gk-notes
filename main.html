@@ -55,13 +55,13 @@
                 <label for="editPassword" class="form-label">Password</label>
                 <input type="password" class="form-control" id="editPassword" placeholder="Enter new password">
             </div>
-            <button class="btn togglePassVisibility"><i class="passToggleIcon bi bi-eye "></i></button>
-            <div class="d-flex align-items-center mb-3">
-                <button class="btn btn-outline-light rounded-circle" style="height: 25px; padding-right: 5px;"></button>
-                <div>PRVA BOJA</div>
-                <div>PRVA BOJA</div>
-                <div>PRVA BOJA</div>
-            </div>
+            <button class="btn togglePassVisibility mb-2"><i class="passToggleIcon bi bi-eye "></i></button>
+            <br>
+
+            <label for="colorButtonsContainer">Choose Theme Color (Day):</label>
+            <div class="d-flex align-items-center mb-3 mt-2 colorButtonsContainer align-items-center"
+                id="colorButtonsContainer"></div>
+
             <button class="btn btn-primary" onclick="saveProfileChanges()">Save Changes</button>
             <button type="button" class="btn btn-secondary"
                 onclick="document.querySelector('.profileEditingModal').classList.add('d-none')">Cancel</button>
@@ -87,10 +87,42 @@
 
         </div>
 
+        <!--NOTE EDITING MODAL-->
+        <div
+            class="noteEditingModal container d-none position-fixed top-50 start-50 translate-middle bg-white p-4 rounded-4 shadow">
+            <h2>Edit Note</h2>
+            <div class="mb-3">
+                <label for="noteTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="editNoteTitle" placeholder="Enter note title">
+            </div>
+            <div class="mb-3">
+                <label for="noteContent" class="form-label">Content</label>
+                <textarea class="form-control" id="editNoteContent" rows="5" placeholder="Enter note content"
+                    style="resize: none;" onkeypress="countEditLetters()"></textarea>
+                <p class="maxLetterCount "><span class="editCurrentLetterCount">0</span>/1000</p>
+            </div>
+            <button class="btn btn-primary" onclick="editNote()">Save Note</button>
+            <button type="button" class="btn btn-secondary cancelBtn cancelEditBtn">Cancel</button>
+
+        </div>
+
+        <!--FABs ADD AND TO TOP-->
+        <div class="floating-buttons d-none flex-column align-items-end gap-2">
+            <button class="btn btn-secondary rounded-circle btn-sm shadow mb-2" id="scrollTopBtn" title="Scroll to Top"
+                style="margin: auto;">
+                <i class="bi bi-arrow-up" style="font-size: 1rem;"></i>
+            </button>
+
+            <button class="btn btn-primary rounded-circle btn-lg shadow-lg" id="scrollAddNoteBtn" title="Add New Note">
+                <i class="bi bi-plus-lg" style="font-size: 1.5rem;"></i>
+            </button>
+        </div>
+
+
         <!--NOTES GRID-->
         <div class="notesGrid mt-4">
-            <p class="text-center notesCountStatus" style="font-weight: lighter;"><i>You have no notes yet. Click "+ Add" to create your first
-                    note!</i></p>
+            <p class="text-center notesCountStatus" style="font-weight: lighter;"><i>You have no notes yet. Click "+
+                    Add" to create your first note!</i></p>
         </div>
 
 
@@ -98,7 +130,15 @@
         <!--SKRIPTE ZA OVAJ PAGE-->
         <script>
             let isDarkMode = false;
+            let isMinimal = localStorage.getItem("minimalMode") === false;
 
+            //scroll header hide/show variables
+            let lastScrollTop = 0;
+            const header = document.querySelector("header");
+            const deltaScroll = 1;
+            const headerHeight = header.offsetHeight;
+
+            //dark mode on page load
             window.addEventListener("DOMContentLoaded", () => {
                 const savedMode = localStorage.getItem("darkmode");
                 if (savedMode === "true") {
@@ -114,22 +154,64 @@
                 }
             });
 
+            //select color index on page load
             window.addEventListener("DOMContentLoaded", selectColorIndex);
 
+            //set random profile color on page load
             window.addEventListener("DOMContentLoaded", setRandomProfileColor);
 
+            //set random note card color on page load
             window.addEventListener("DOMContentLoaded", setRandomNoteCardColor);
 
+            //set random profile text color on page load
             window.addEventListener("DOMContentLoaded", setRandomProfileTextColor);
+
+
+            //scroll header hide/show
+            window.addEventListener("scroll", () => {
+                const floatingBtns = document.querySelector(".floating-buttons");
+                const scrollAddNoteBtn = document.getElementById("scrollAddNoteBtn");
+                const scrollTopBtn = document.getElementById("scrollTopBtn");
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (Math.abs(scrollTop - lastScrollTop) > deltaScroll) {
+                    if (scrollTop > lastScrollTop && scrollTop > headerHeight) {
+                        floatingBtns.classList.remove("d-none");
+                        header.classList.add("hide");
+                    } else {
+                        floatingBtns.classList.add("suckIn");
+                        setTimeout(() => {
+                            floatingBtns.classList.add("d-none");
+                        }, 300);
+
+                        header.classList.remove("hide");
+                    }
+                    lastScrollTop = scrollTop;
+                }
+
+                scrollTopBtn.addEventListener("click", () => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                });
+
+                scrollAddNoteBtn.addEventListener("click", openNoteCreationModal);
+            });
+
+            window.addEventListener("DOMContentLoaded", renderColorButtons)
 
             document.getElementById("toggleDarkMode").addEventListener("click", switchDarkMode);
 
             document.querySelector(".addNoteBtn").addEventListener("click", openNoteCreationModal);
 
-            document.querySelector(".cancelBtn").addEventListener("click", ()=>{
+            document.querySelector(".cancelBtn").addEventListener("click", () => {
                 document.querySelector('.noteCreationModal').classList.add('d-none');
-                document.querySelector("#noteTitle").value ="";
-                document.querySelector("#noteContent").value ="";
+                document.querySelector("#noteTitle").value = "";
+                document.querySelector("#noteContent").value = "";
+            })
+
+            document.querySelector(".cancelEditBtn").addEventListener("click", () => {
+                document.querySelector('.noteEditingModal').classList.add('d-none');
+                document.querySelector("#editNoteTitle").value = "";
+                document.querySelector("#editNoteContent").value = "";
             })
 
             document.getElementById("LogOutButton").addEventListener("click", function () {
@@ -138,74 +220,25 @@
                 window.location.href = "./index.html";
             });
 
-            document.querySelector(".togglePassVisibility").addEventListener("click",()=>{
+            document.querySelector(".togglePassVisibility").addEventListener("click", () => {
                 const passInput = document.querySelector("#editPassword");
 
-                if(passInput.type =="password"){
-                    passInput.type == "text";
+                if (passInput.type === "password") {
+                    passInput.type = "text";
                     document.querySelector(".passToggleIcon").classList.remove("bi-eye");
                     document.querySelector(".passToggleIcon").classList.add("bi-eye-slash");
-                }else{
-                    passInput.type == "password"
+                } else {
+                    passInput.type = "password"
                     document.querySelector(".passToggleIcon").classList.add("bi-eye");
                     document.querySelector(".passToggleIcon").classList.remove("bi-eye-slash");
                 }
 
-                
+
             })
 
-            function getUsernameDisplay(name) {
-
-                const parts = name.split(/[\.\_\-\+\@]/);
-
-                let displayName = parts[0];
-
-                displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
-
-                return displayName;
-            }
-            function ReadUserData() {
-                const username = localStorage.getItem("username") || "Guest";
-                const password = localStorage.getItem("password") || "";
-                let displayUsername = getUsernameDisplay(username);
-
-
-                let info = document.getElementById("usernameTitle");
-                info.innerText = displayUsername;
-
-                let pfpName = document.getElementById("usernamePfp");
-                pfpName.innerText = username;
-
-                let pfpShortName = displayUsername.charAt(0).toUpperCase();
-                document.getElementById("profile-pill-span").innerText = pfpShortName;
-
-                this.document.title = displayUsername + "'s Notes | GK NOTES";
-            }
             window.onload = ReadUserData;
-
-            function saveProfileChanges() {
-                let newUsername = document.getElementById("editUsername").value.trim();
-                let newPassword = document.getElementById("editPassword").value;
-
-
-                if (newUsername) {
-                    let shortName = newUsername.split("@")[0];
-                    newUsername = shortName.charAt(0).toUpperCase() + shortName.slice(1);
-
-                    localStorage.setItem("username", newUsername);
-                }
-
-                if (newPassword) {
-                    localStorage.setItem("password", newPassword);
-                }
-
-                ReadUserData();
-
-                document.querySelector('.profileEditingModal').classList.add('d-none');
-
-
-                alert("Profile updated successfully!");
-            }
         </script>
 </body>
+
+
 </html>

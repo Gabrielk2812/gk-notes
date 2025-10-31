@@ -92,7 +92,8 @@ body.dark-mode #toggleDarkMode {
 
 body.dark-mode .profileEditingModal,
 body.dark-mode .modal-content,
-body.dark-mode .noteCreationModal {
+body.dark-mode .noteCreationModal,
+body.dark-mode .noteEditingModal {
     background-color: rgba(30, 30, 30, 0.95) !important;
     color: #fff !important;
     border: 1px solid #444;
@@ -101,6 +102,7 @@ body.dark-mode .noteCreationModal {
 
 body.dark-mode .profileEditingModal h2
 body.dark-mode .noteCreationModal h2,
+body.dark-mode .noteEditingModal h2
 body.dark-mode .modal-header,
 body.dark-mode .modal-title {
     color: #fff;
@@ -109,28 +111,34 @@ body.dark-mode .modal-title {
 
 body.dark-mode .profileEditingModal input,
 body.dark-mode .noteCreationModal input,
+body.dark-mode .noteEditingModal input,
 body.dark-mode .profileEditingModal textarea,
-body.dark-mode .noteCreationModal textarea {
+body.dark-mode .noteCreationModal textarea,
+body.dark-mode .noteEditingModal textarea {
     background-color: rgba(255, 255, 255, 0.1);
     color: #fff;
     border: 1px solid #aaa;
 }
 
 body.dark-mode .profileEditingModal ::placeholder,
+body.dark-mode .noteEditingModal ::placeholder,
+body.dark-mode .noteCreationModal ::placeholder,
 body.dark-mode .modal ::placeholder {
     color: rgba(255, 255, 255, 0.6);
 }
 
 
 body.dark-mode .profileEditingModal .btn,
-body.dark-mode .noteCreationModal .btn {
+body.dark-mode .noteCreationModal .btn,
+body.dark-mode .noteEditingModal .btn {
     background-color: #4B1E8F;
     color: #fff;
     border: none;
 }
 
 body.dark-mode .profileEditingModal .btn-secondary,
-body.dark-mode .noteCreationModal .btn-secondary {
+body.dark-mode .noteCreationModal .btn-secondary,
+body.dark-mode .noteEditingModal .btn-secondary {
     background-color: #555;
     color: #fff;
     border: none;
@@ -158,8 +166,50 @@ body.dark-mode .noteCreationModal .btn-secondary {
     width: 100%;
     padding: 20px;
     border-radius: 5px;
-    /* backdrop-filter: blur(10px); */
     z-index: 3;
+}
+
+header {
+  transition: transform 0.3s ease;
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+header.hide {
+  transform: translateY(-100%);
+}
+
+.floating-buttons {
+    animation: addIn 0.2s ease forwards;
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    z-index: 1050;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+#scrollAddNoteBtn {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#scrollTopBtn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#scrollAddNoteBtn,
+#scrollTopBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .profile-container {
@@ -293,6 +343,11 @@ body.dark-mode .noteCreationModal .btn-secondary {
     transform: rotate(180deg);
 }
 
+.colorButtonsContainer > button {
+    padding-bottom: 10px;
+
+}
+
 
 .wave {
     position: absolute;
@@ -329,6 +384,31 @@ body.dark-mode .noteCreationModal .btn-secondary {
 .noteCard.added {
     animation: addIn 0.4s ease forwards;
 }
+
+.profileEditingModal.added{
+    animation: addIn 0.1s ease forwards;
+}
+
+.noteCreationModal.added{
+    animation: addIn 0.1s ease forwards;
+}
+
+.noteEditingModal.added{
+    animation: addIn 0.1s ease forwards;
+}
+
+.profileEditingModal.closed{
+    animation: suckIn 0.1s ease forwards;
+}
+
+.noteCreationModal.closed{
+    animation: suckIn 0.1s ease forwards;
+}
+
+.noteEditingModal.closed{
+    animation: suckIn 0.1s ease forwards;
+}
+
 
 @keyframes suckIn {
     0% {
