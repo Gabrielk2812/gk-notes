@@ -162,7 +162,7 @@ function openProfileEditingModal() {
     void modal.offsetWidth;
     modal.classList.add('added');
 
-    document.querySelector("#editUsername").value = localStorage.getItem("username");
+    document.querySelector("#editUsername").value = localStorage.getItem("email");
     document.querySelector("#editPassword").value = localStorage.getItem("password");
 }
 
@@ -364,7 +364,7 @@ function getUsernameDisplay(name) {
 }
 
 function ReadUserData() {
-    const username = localStorage.getItem("username") || "Guest";
+    const username = localStorage.getItem("email") || "Guest";
     const password = localStorage.getItem("password") || "";
     let displayUsername = getUsernameDisplay(username);
 
@@ -391,7 +391,7 @@ function saveProfileChanges() {
         let shortName = newUsername.split("@")[0];
         newUsername = shortName.charAt(0).toUpperCase() + shortName.slice(1);
 
-        localStorage.setItem("username", newUsername);
+        localStorage.setItem("email", newUsername);
     }
 
     if (newPassword) {

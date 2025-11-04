@@ -48,8 +48,8 @@
             class="profileEditingModal container d-none position-fixed top-50 start-50 translate-middle bg-white p-4 rounded-4 shadow">
             <h2>Profile Settings</h2>
             <div class="mb-3">
-                <label for="editUsername" class="form-label">Username</label>
-                <input type="text" class="form-control" id="editUsername" placeholder="Enter new username">
+                <label for="editUsername" class="form-label">Email</label>
+                <input type="email" class="form-control" id="editUsername" placeholder="Enter new Email">
             </div>
             <div class="mb-3">
                 <label for="editPassword" class="form-label">Password</label>
@@ -98,7 +98,7 @@
             <div class="mb-3">
                 <label for="noteContent" class="form-label">Content</label>
                 <textarea class="form-control" id="editNoteContent" rows="5" placeholder="Enter note content"
-                    style="resize: none;" onkeypress="countEditLetters()"></textarea>
+                    style="resize: none;" onchange="countEditLetters()" onpaste="countEditLetters()"></textarea>
                 <p class="maxLetterCount "><span class="editCurrentLetterCount">0</span>/1000</p>
             </div>
             <button class="btn btn-primary" onclick="editNote()">Save Note</button>
@@ -121,7 +121,7 @@
 
         <!--NOTES GRID-->
         <div class="notesGrid mt-4">
-            <p class="text-center notesCountStatus" style="font-weight: lighter;"><i>You have no notes yet. Click "+
+            <p class="text-center notesCountStatus" style="font-weight: 300;"><i>You have no notes yet. Click "+
                     Add" to create your first note!</i></p>
         </div>
 
@@ -215,7 +215,7 @@
             })
 
             document.getElementById("LogOutButton").addEventListener("click", function () {
-                localStorage.removeItem("username");
+                localStorage.removeItem("email");
                 localStorage.removeItem("password");
                 window.location.href = "./index.html";
             });
